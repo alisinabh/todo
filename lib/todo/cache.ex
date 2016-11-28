@@ -4,6 +4,7 @@ defmodule Todo.Cache do
 
   def save(list) do
     :ets.insert(__MODULE__, {to_atom(list.name), list})
+    :ets.tab2file(__MODULE__, :todofile)
   end
 
   def find(list_name) do
@@ -30,7 +31,9 @@ defmodule Todo.Cache do
   end
 
   def init(_) do
-    table = :ets.new(__MODULE__, [:named_table, :public])
-    {:ok, table}
+    case :ets.file2tab(:todofile) do
+      {:ok, table} -> {:ok, table}
+      _ -> {:ok, :ets.new(__MODULE__, [:named_table, :public])}
+    end
   end
 end

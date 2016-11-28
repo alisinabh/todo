@@ -23,4 +23,11 @@ defmodule Todo.CacheTest do
     Cache.clear
     refute Cache.find(list.name)
   end
+
+  test "verify that cache is presistent", %{list: list} do
+    Supervisor.terminate_child(Todo.Supervisor, Cache)
+    {:ok, _} = Supervisor.restart_child(Todo.Supervisor, Cache)
+
+    assert Cache.find(list.name) == list
+  end
 end
