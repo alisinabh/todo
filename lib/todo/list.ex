@@ -19,6 +19,15 @@ defmodule Todo.List do
     GenServer.cast(list, {:update, item})
   end
 
+  def add_range(list, [head | tail]) do
+    GenServer.cast(list, {:add, head})
+    add_range(list, tail)
+  end
+
+  def add_range(_list, []) do
+    :ok
+  end
+
   ###
   # GenServer API
   ###
@@ -29,6 +38,7 @@ defmodule Todo.List do
 
   def init(name) do
     state = Cache.find(name) || %{name: name, items: []}
+    Cache.save(state)
     {:ok, state}
   end
 

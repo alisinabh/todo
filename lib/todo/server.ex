@@ -21,12 +21,22 @@ defmodule Todo.Server do
     |> Enum.map(fn({_, child, _, _}) -> child end)
   end
 
+  def restore_server do
+    Todo.Cache.get_all_lists |>
+      Enum.each(fn (listmap) ->
+        {:ok, _} = add_list(elem(listmap, 1)[:name])
+      end)
+  end
+
   ###
   # Supervisor API
   ###
 
   def start_link do
-    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+    supvar = Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+
+    restore_server
+    supvar
   end
 
   def init(_) do

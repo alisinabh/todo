@@ -36,4 +36,15 @@ defmodule Todo.ServerTest do
 
     assert counts.active == 0
   end
+
+  test "restoring server is ok" do
+    Server.add_list("RestoreProc")
+
+    Supervisor.terminate_child(Todo.Supervisor, Server)
+    {:ok, _} = Supervisor.restart_child(Todo.Supervisor, Server)
+
+    list = Server.find_list("RestoreProc")
+
+    refute list == nil
+  end
 end
